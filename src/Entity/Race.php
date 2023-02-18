@@ -54,6 +54,11 @@ class Race
      */
     private $racial_abilities;
 
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $partiality;
+
     public function __construct()
     {
         $this->racial_abilities = new ArrayCollection();
@@ -156,6 +161,18 @@ class Race
     public function removeRacialAbility(RacialAbility $racialAbility): self
     {
         $this->racial_abilities->removeElement($racialAbility);
+
+        return $this;
+    }
+
+    public function getPartiality(): ?string
+    {
+        return $this->partiality;
+    }
+
+    public function setPartiality(string $partiality): self
+    {
+        $this->partiality = $partiality;
 
         return $this;
     }
