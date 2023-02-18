@@ -40,19 +40,19 @@ class RacialAbility
     private $traits = [];
 
     /**
-     * @ORM\OneToMany(targetEntity=Sheet::class, mappedBy="racial_ability")
+     * @ORM\ManyToOne(targetEntity=Race::class, inversedBy="racialAbilities")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $sheets;
+    private $race;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Race::class, mappedBy="racial_abilities")
+     * @ORM\OneToMany(targetEntity=Sheet::class, mappedBy="racialAbility")
      */
-    private $races;
+    private $sheets;
 
     public function __construct()
     {
         $this->sheets = new ArrayCollection();
-        $this->races = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -108,6 +108,18 @@ class RacialAbility
         return $this;
     }
 
+    public function getRace(): ?Race
+    {
+        return $this->race;
+    }
+
+    public function setRace(?Race $race): self
+    {
+        $this->race = $race;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Sheet>
      */
@@ -133,33 +145,6 @@ class RacialAbility
             if ($sheet->getRacialAbility() === $this) {
                 $sheet->setRacialAbility(null);
             }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Race>
-     */
-    public function getRaces(): Collection
-    {
-        return $this->races;
-    }
-
-    public function addRace(Race $race): self
-    {
-        if (!$this->races->contains($race)) {
-            $this->races[] = $race;
-            $race->addRacialAbility($this);
-        }
-
-        return $this;
-    }
-
-    public function removeRace(Race $race): self
-    {
-        if ($this->races->removeElement($race)) {
-            $race->removeRacialAbility($this);
         }
 
         return $this;

@@ -30,7 +30,12 @@ class Race
     private $description;
 
     /**
-     * @ORM\Column(type="json")
+     * @ORM\Column(type="text")
+     */
+    private $partiality;
+
+    /**
+     * @ORM\Column(type="json", nullable=true)
      */
     private $stats = [];
 
@@ -50,18 +55,13 @@ class Race
     private $picture_female;
 
     /**
-     * @ORM\ManyToMany(targetEntity=RacialAbility::class, inversedBy="races")
+     * @ORM\OneToMany(targetEntity=RacialAbility::class, mappedBy="race")
      */
-    private $racial_abilities;
-
-    /**
-     * @ORM\Column(type="text")
-     */
-    private $partiality;
+    private $racialAbilities;
 
     public function __construct()
     {
-        $this->racial_abilities = new ArrayCollection();
+        $this->racialAbilities = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -93,12 +93,24 @@ class Race
         return $this;
     }
 
+    public function getPartiality(): ?string
+    {
+        return $this->partiality;
+    }
+
+    public function setPartiality(string $partiality): self
+    {
+        $this->partiality = $partiality;
+
+        return $this;
+    }
+
     public function getStats(): ?array
     {
         return $this->stats;
     }
 
-    public function setStats(array $stats): self
+    public function setStats(?array $stats): self
     {
         $this->stats = $stats;
 
@@ -146,13 +158,14 @@ class Race
      */
     public function getRacialAbilities(): Collection
     {
-        return $this->racial_abilities;
+        return $this->racialAbilities;
     }
 
     public function addRacialAbility(RacialAbility $racialAbility): self
     {
-        if (!$this->racial_abilities->contains($racialAbility)) {
-            $this->racial_abilities[] = $racialAbility;
+        if (!$this->racialAbilities->contains($racialAbility)) {
+            $this->racialAbilities[] = $racialAbility;
+            $racialAbility->setRace($this);
         }
 
         return $this;
@@ -160,19 +173,12 @@ class Race
 
     public function removeRacialAbility(RacialAbility $racialAbility): self
     {
-        $this->racial_abilities->removeElement($racialAbility);
-
-        return $this;
-    }
-
-    public function getPartiality(): ?string
-    {
-        return $this->partiality;
-    }
-
-    public function setPartiality(string $partiality): self
-    {
-        $this->partiality = $partiality;
+        if ($this->racialAbilities->removeElement($racialAbility)) {
+            // set the owning side to null (unless already changed)
+            if ($racialAbility->getRace() === $this) {
+                $racialAbility->setRace(null);
+            }
+        }
 
         return $this;
     }

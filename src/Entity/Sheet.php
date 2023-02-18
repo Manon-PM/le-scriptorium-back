@@ -95,7 +95,7 @@ class Sheet
      * @ORM\ManyToOne(targetEntity=RacialAbility::class, inversedBy="sheets")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $racial_ability;
+    private $racialAbility;
 
     public function __construct()
     {
@@ -289,13 +289,15 @@ class Sheet
 
     public function getRacialAbility(): ?RacialAbility
     {
-        return $this->racial_ability;
+        return $this->racialAbility;
     }
 
-    public function setRacialAbility(?RacialAbility $racial_ability): self
+    public function setRacialAbility(?RacialAbility $racialAbility): self
     {
-        $this->racial_ability = $racial_ability;
+        $this->racialAbility = $racialAbility;
 
         return $this;
     }
+
+    
 }
