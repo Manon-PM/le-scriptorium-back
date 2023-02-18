@@ -30,7 +30,7 @@ class RacialAbility
     private $description;
 
     /**
-     * @ORM\Column(type="json")
+     * @ORM\Column(type="json", nullable=true)
      */
     private $bonus = [];
 

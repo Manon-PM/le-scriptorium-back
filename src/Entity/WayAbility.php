@@ -60,6 +60,11 @@ class WayAbility
      */
     private $way;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $level;
+
     public function __construct()
     {
         $this->sheets = new ArrayCollection();
@@ -177,6 +182,18 @@ class WayAbility
     public function setWay(?Way $way): self
     {
         $this->way = $way;
+
+        return $this;
+    }
+
+    public function getLevel(): ?int
+    {
+        return $this->level;
+    }
+
+    public function setLevel(int $level): self
+    {
+        $this->level = $level;
 
         return $this;
     }
