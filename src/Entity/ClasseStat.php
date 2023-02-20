@@ -34,6 +34,11 @@ class ClasseStat
      */
     private $priority;
 
+    public function __construct()
+    {
+        $this->priority = true;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

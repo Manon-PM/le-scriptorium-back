@@ -34,6 +34,11 @@ class ClasseEquipment
      */
     private $number;
 
+    public function __construct()
+    {
+        $this->number = 1;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
