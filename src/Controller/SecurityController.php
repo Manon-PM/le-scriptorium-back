@@ -9,29 +9,36 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class SecurityController extends AbstractController
 {
     /**
      * Inscription de l'utilisateur en utilisant les données envoyées au format JSON
      * @Route("/inscription", name="app_security_inscription")
+     * @return JsonResponse
      */
-    public function inscription(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $manager): JsonResponse
+    public function inscription(Request $request, SerializerInterface $serialiser, ValidatorInterface $validator, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $manager): JsonResponse
     {
-        $userDatas = json_decode($request->getContent(), true);
-        // dd($userDatas["pseudo"]);
+        $userDatas = $request->getContent();
 
-        $user = new User();
-        $user->setPseudo($userDatas["pseudo"])
-            ->setEmail($userDatas["email"])
-            ->setPassword($passwordHasher->hashPassword($user, $userDatas["password"]));
+        $user = $serialiser->deserialize($userDatas, User::class, "json");
 
-        dd($user);
+        $error = $validator->validate($user);
+
+        if (count($error) > 0) {
+            return $this->json("Bad");
+        }
+        // dd($user);
+        $user->setPassword($passwordHasher->hashPassword($user, $user->getPassword()));
+        // dd($user);
+        
         $manager->persist($user);
         $manager->flush();
+
         return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/SecurityController.php',
+            "good"
         ]);
     }
 }
