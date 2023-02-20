@@ -29,16 +29,6 @@ class Stat
      */
     private $description;
 
-    /**
-     * @ORM\OneToMany(targetEntity=ClasseStat::class, mappedBy="stat")
-     */
-    private $classeStats;
-
-    public function __construct()
-    {
-        $this->classeStats = new ArrayCollection();
-    }
-
     public function getId(): ?int
     {
         return $this->id;
@@ -64,36 +54,6 @@ class Stat
     public function setDescription(string $description): self
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, ClasseStat>
-     */
-    public function getClasseStats(): Collection
-    {
-        return $this->classeStats;
-    }
-
-    public function addClasseStat(ClasseStat $classeStat): self
-    {
-        if (!$this->classeStats->contains($classeStat)) {
-            $this->classeStats[] = $classeStat;
-            $classeStat->setStat($this);
-        }
-
-        return $this;
-    }
-
-    public function removeClasseStat(ClasseStat $classeStat): self
-    {
-        if ($this->classeStats->removeElement($classeStat)) {
-            // set the owning side to null (unless already changed)
-            if ($classeStat->getStat() === $this) {
-                $classeStat->setStat(null);
-            }
-        }
 
         return $this;
     }
