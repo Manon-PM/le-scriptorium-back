@@ -30,18 +30,12 @@ class Stat
     private $description;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Classe::class, mappedBy="stats")
-     */
-    private $classes;
-
-    /**
      * @ORM\OneToMany(targetEntity=ClasseStat::class, mappedBy="stat")
      */
     private $classeStats;
 
     public function __construct()
     {
-        $this->classes = new ArrayCollection();
         $this->classeStats = new ArrayCollection();
     }
 
@@ -70,33 +64,6 @@ class Stat
     public function setDescription(string $description): self
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Classe>
-     */
-    public function getClasses(): Collection
-    {
-        return $this->classes;
-    }
-
-    public function addClass(Classe $class): self
-    {
-        if (!$this->classes->contains($class)) {
-            $this->classes[] = $class;
-            $class->addStat($this);
-        }
-
-        return $this;
-    }
-
-    public function removeClass(Classe $class): self
-    {
-        if ($this->classes->removeElement($class)) {
-            $class->removeStat($this);
-        }
 
         return $this;
     }
