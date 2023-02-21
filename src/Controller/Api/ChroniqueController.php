@@ -7,6 +7,7 @@ use App\Repository\RaceRepository;
 use App\Repository\StatRepository;
 use App\Repository\ClasseRepository;
 use App\Repository\ReligionRepository;
+use App\Utils\ClassesDataSQL;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,14 +23,13 @@ class ChroniqueController extends AbstractController
      * @Route("/classes", name="classes_get_collection", methods={"GET"})
      * Get all classes for the classes choice page
      */
-    public function getClasses(ClasseRepository $classeRepository): JsonResponse
+    public function getClasses(ClasseRepository $classeRepository, ClassesDataSQL $classeDataSql): JsonResponse
     {
-        $classes = $classeRepository->findAll();
+        $classes = $classeDataSql->getClasses();
         return $this->json(
-            ['classes' => $classes],
-            Response::HTTP_OK,
-            [],
-            ['groups'=>'classes_get_collection']
+            ["classes" => $classes],
+            200,
+            []
         );
     }
 
