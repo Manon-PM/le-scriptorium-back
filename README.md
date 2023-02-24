@@ -50,3 +50,8 @@ bin/console lexik:jwt:generate-keypair
 | `/api/classes`| `GET`| retrieve all classes and their infos| 200|
 | `/api/races`| `GET`| retrieve all races and their infos| 200|
 | `/api/ways`| `GET`| retrieve all ways and their infos| 200|
+| `/api/character/id`| `GET`| retrieve All information from the saved character sheet| 200|
+| `/api/stats`| `GET`| retrieve all stats (name, description)| 200|
+| `/api/generator`| `POST`| All information from the completed character sheet + generation of the pdf + caching| 200|
+| `/api/religions`| `GET`| retrieve all religions and their infos| 200|
+| `/api/characters`| `POST`| Allows saving from the generated cache on the /api/generator route| 200|
