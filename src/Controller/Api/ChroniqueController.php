@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Classe;
 use App\Repository\WayRepository;
 use App\Repository\RaceRepository;
 use App\Repository\StatRepository;
@@ -79,6 +80,32 @@ class ChroniqueController extends AbstractController
             $item->expiresAfter(3600);
 
             return $wayRepository->getWaysAndWayAbilities();
+        });
+        
+        return $this->json(
+            ['ways' => $ways],
+            Response::HTTP_OK,
+            [],
+            ['groups' => 'ways_get_collection']
+        );
+    }
+
+    /**
+     * @Route("/ways/{id}", name="way_get_collection", methods={"GET"})
+     * Get way by classe_id
+     */
+    public function getWay(Classe $classe = null, WayRepository $wayRepository)
+    {
+        if (empty($classe)) {
+            return $this->json(
+                ["error" => "Il n'existe aucune classe liée à cet identifiant."],
+                404
+            );
+        }
+        $ways = $this->cache->get("ways", function(ItemInterface $item) use ($wayRepository, $classe) {
+            $item->expiresAfter(3600);
+
+            return $wayRepository->getWayAndWayAbilities($classe);
         });
         
         return $this->json(
