@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Utils\RateLimiterService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,8 +22,9 @@ class SecurityController extends AbstractController
      * @Route("/inscription", name="app_security_inscription")
      * @return JsonResponse
      */
-    public function inscription(Request $request, SerializerInterface $serialiser, ValidatorInterface $validator, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $manager): JsonResponse
+    public function inscription(Request $request, SerializerInterface $serialiser, ValidatorInterface $validator, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $manager,RateLimiterService $rateLimiter): JsonResponse
     {
+        $rateLimiter->limit($request);
         $userDatas = $request->getContent();
 
         $user = $serialiser->deserialize($userDatas, User::class, "json");
@@ -58,8 +60,9 @@ class SecurityController extends AbstractController
     /**
      * @Route("/login", name="login")
      */
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(AuthenticationUtils $authenticationUtils, Request $request, RateLimiterService $rateLimiter): Response
     {
+        $rateLimiter->limit($request);
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
 

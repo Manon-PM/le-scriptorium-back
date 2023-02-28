@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Entity\Sheet;
 use App\Repository\SheetRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Utils\RateLimiterService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -26,13 +27,17 @@ class SheetController extends AbstractController
      * @Route("/characters/{id<\d+>}", name="sheets_get_item", methods={"GET"})
      * Get one sheet by id
      */
-    public function getSheetItem(Sheet $sheet = null): JsonResponse
+    public function getSheetItem(Sheet $sheet = null, RateLimiterService $rateLimiter, Request $request): JsonResponse
     {
+        
+        $rateLimiter->limit($request);
+        
         if (empty($sheet)) {
             return $this->json(['message' => 'Fiche de personnage non trouvée.'], Response::HTTP_NOT_FOUND);
         }
 
         $this->denyAccessUnlessGranted('GET_SHEET', $sheet);
+        
         return $this->json(
             ['sheet' => $sheet],
             Response::HTTP_OK,
@@ -45,8 +50,10 @@ class SheetController extends AbstractController
      * @Route("/characters/users", name="sheets_get_collection", methods={"GET"})
      * Get all sheets by user id
      */
-    public function getUserSheets(SheetRepository $sheetRepository, TokenStorageInterface $tokenInterface): JsonResponse
+    public function getUserSheets(SheetRepository $sheetRepository, TokenStorageInterface $tokenInterface,RateLimiterService $rateLimiter,Request $request): JsonResponse
     {
+        $rateLimiter->limit($request);
+
         $token = $tokenInterface->getToken();
         $user = $token->getUser();
         $sheets = $sheetRepository->findBy(['user' => $user]);

@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Entity\Sheet;
 use App\Utils\PdfService;
 use App\Repository\SheetRepository;
+use App\Utils\RateLimiterService;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,8 +20,9 @@ class PdfController extends AbstractController
     /**
      * @Route("/api/generator", name="app_api_pdf")
      */
-    public function generatePdf(PdfService $pdf, SerializerInterface $serializer, Request $request): JsonResponse
+    public function generatePdf(PdfService $pdf, SerializerInterface $serializer, Request $request, RateLimiterService $rateLimiter): JsonResponse
     {
+        $rateLimiter->limit($request);
         // On instencie FilesystemAdapter pour gérer le cache
         $cache = new FilesystemAdapter();
         // Par précaution on vide le cache de la clé pdf_content
