@@ -6,6 +6,7 @@ use App\Entity\Sheet;
 use App\Utils\CheckSerializer;
 use App\Utils\RateLimiterService;
 use App\Repository\SheetRepository;
+use App\Utils\PdfService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +23,7 @@ class PdfController extends AbstractController
     /**
      * @Route("/api/generator", name="app_api_pdf", methods="POST")
      */
-    public function generatePdf(\Knp\Snappy\Pdf $knpSnappyImage, CheckSerializer $checker, Request $request, RateLimiterService $rateLimiter, ValidatorInterface $validator): PdfResponse
+    public function generatePdf(\Knp\Snappy\Pdf $knpSnappyImage, CheckSerializer $checker, Request $request, RateLimiterService $rateLimiter, ValidatorInterface $validator)
     {
         //$rateLimiter->limit($request);
         // On instencie FilesystemAdapter pour gérer le cache
@@ -74,9 +75,12 @@ class PdfController extends AbstractController
         ]);
       
         // $html = $this->renderView('api/pdf/test.html.twig');
-        return new PdfResponse(
+        return new Response(
             $knpSnappyImage->getOutputFromHtml($html),
-            'file.pdf'
+            200,
+            array(
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="fiche.pdf"')
         );
         //On retourne une confirmation en json
         // return $this->json(
@@ -116,4 +120,58 @@ class PdfController extends AbstractController
 
     // }
 
+    /**
+     * @Route("/api/generator/dom", name="app_api_pdf", methods="POST")
+     */
+    public function generatePdfDom(PdfService $pdf, CheckSerializer $checker, Request $request, RateLimiterService $rateLimiter, ValidatorInterface $validator)
+    {
+        $cache = new FilesystemAdapter();
+
+        $cacheKey = 'pdf_content_' . $request->getSession()->getId();
+
+        $jsonContent = $request->getContent();
+        
+        $cache->get($cacheKey, function (ItemInterface $item) use ($jsonContent) {
+            $item->expiresAfter(900);
+            return $jsonContent;
+        });
+        
+        $result = $checker->serializeValidation($jsonContent, Sheet::class);
+        
+        if (!$result instanceof Sheet) {
+            return $this->json(
+                ["error" => $result],
+                404,
+                []
+            );
+        }
+
+        $errors = $validator->validate($result);
+
+        if (count($errors) > 0) {
+            foreach($errors as $error) {
+                $errorJson[$error->getPropertyPath()] = $error->getMessage();
+            }
+
+            return $this->json("ok");
+        }
+        
+        //On stock le template twig avec le contenu de jsonContent (Request) dans $html
+        $html = $this->renderView('api/pdf/fiche.html.twig', [
+            'pdfContent' => $result,
+        ]);
+      
+        // On envoie le template twig à la methode de DomPdf dans le pdfService
+        $pdf->showPdf($html);
+
+        //On retourne une confirmation en json
+        return $this->json(
+            ['confirmation' => 'pdf generé'],
+            Response::HTTP_CREATED,
+            []
+        );
+    }
+
 }
+
+
