@@ -28,6 +28,7 @@ class ChroniqueController extends AbstractController
     public function __construct()
     {
         $this->cache = new FilesystemAdapter();
+        $this->cache->delete('ways');
     }
 
     /**
@@ -79,7 +80,6 @@ class ChroniqueController extends AbstractController
 
             return $wayRepository->getWaysAndWayAbilities($id);
         });
-        
         return $this->json(
             ['ways' => $ways],
             Response::HTTP_OK,
