@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class ChroniqueControllerAccessTest extends WebTestCase
 {   
     /**
-     * Undocumented function
+     * Test to assert response datas types. Json in this case
      *
      * @dataProvider getRoutes
      */
@@ -17,6 +17,7 @@ class ChroniqueControllerAccessTest extends WebTestCase
         $client->request('GET', $route);
         $response = $client->getResponse();
         $this->assertTrue($response->headers->contains('Content-Type', 'application/json'));
+        $this->assertResponseIsSuccessful();
     }
 
     public function getRoutes()
@@ -27,23 +28,4 @@ class ChroniqueControllerAccessTest extends WebTestCase
         yield ['/api/stats'];
         yield ['/api/religions'];
     }
-
-    /*
-    public function testClasses()
-    {
-        $client = static::createClient();
-        $client->request('GET', '/api/classes');
-
-        $response = $client->getResponse();
-
-        $classes = json_decode($response->getContent(), true);
-        dd($classes);
-
-        $test = $this->assertTrue(array_key_exists(0, $classes));
-        dd($test);
-        $this->assertArrayHasKey('name', $classes);
-        $this->assertArrayHasKey('description', $classes);
-
-
-    }*/
 }
