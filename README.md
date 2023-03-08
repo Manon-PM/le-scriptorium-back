@@ -2,34 +2,28 @@
 
 Scriptorium is an application that will easily guide a player through the process of creating a character for the "Chroniques oubliées" french role-playing game. This application will allow the player to generate his character sheet in PDF format.
 
-## Development environment :
+- An unregistered USER can only generate a pdf character sheet.
 
-### Technical specifications:
+- A registered USER can save, modify, and regenerate in pdf the character sheets created.
+  User account connexion route : `/connection`
+
+- A user with a ROLE_GAME_MASTER role can manage groups with many players.
+  Backoffice connexion route : `/api/game-master`
+
+- A user with ROLE_ADMIN role can CRUD all parts of the application (users,sheets).
+  Backoffice connexion route : `/admin`
+
+- The frontend part is managed by the repository at the address `https://github.com/O-clock-Lucy/projet-03-fiches-jeux-de-role-front/tree/develop`
+
+## Development environment
+
+### Technical specifications
 
 PHP 7.4
+Symfony 5.4 framework
 Composer
-BDD MySQL
 
-### Project launch commands :
-
-```bash
-composer create-project symfony/skeleton oflix
-composer require annotations
-composer require twig
-composer require --dev symfony/var-dumper
-composer require --dev symfony/profiler-pack
-composer require --dev symfony/debug-bundle
-composer require symfony/asset
-composer require maker
-composer require symfony/orm-pack
-composer require --dev orm-fixtures
-composer require symfony/validator
-composer require security-csrf ???
-composer require symfony/security-bundle
-composer require serializer
-```
-
-### Commands to execute when importing the project on a local machine in -dev mode :
+### Commands to execute when importing the project on a local machine in -dev mode
 
 Create .env.local file
 
@@ -41,17 +35,22 @@ bin/console doctrine:fixtures:load
 bin/console lexik:jwt:generate-keypair
 ```
 
-## API routes list :
+## Services
 
+### rateLimiter
 
+To initialize the pdf generation service, download and install the binary at <https://wkhtmltopdf.org/downloads.html>
 
-| Endpoint| HTTP  | Description| Return|
-| ------------------------- | ------------ | --------------------------------------------------------------------------------------------- | ----------------------- |
-| `/api/classes`| `GET`| retrieve all classes and their infos| 200|
-| `/api/races`| `GET`| retrieve all races and their infos| 200|
-| `/api/ways`| `GET`| retrieve all ways and their infos| 200|
-| `/api/character/id`| `GET`| retrieve All information from the saved character sheet| 200|
-| `/api/stats`| `GET`| retrieve all stats (name, description)| 200|
-| `/api/generator`| `POST`| All information from the completed character sheet + generation of the pdf + caching| 200|
-| `/api/religions`| `GET`| retrieve all religions and their infos| 200|
-| `/api/characters`| `POST`| Allows saving from the generated cache on the /api/generator route| 200|
+#### Cron
+
+To activate the cron job for removing unused tokens(used for account activation and reset-password), use the `app:token:remove` command.
+
+#### Mail Service
+
+The user account activation and password recovery is done by email. Configure the properties of your mail service in the .env file on the MAILER_DSN line.
+
+In the `reset_passord_success.html.twig` template, fill in the redirection address to the front office (ex: user login page).
+
+#### Security
+
+Rate Limiter is already configured. If you need secure more Routes, see comments in the `RateLimiterService.php`
