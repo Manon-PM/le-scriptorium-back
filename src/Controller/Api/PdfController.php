@@ -73,7 +73,7 @@ class PdfController extends AbstractController
         // $html = $this->renderView('api/pdf/test.html.twig');
         return new PdfResponse(
             $knpSnappyImage->getOutputFromHtml($html),
-            'file.pdf'
+            'fiche.pdf'
         );
     }
 

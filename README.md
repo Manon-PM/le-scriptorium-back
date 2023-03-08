@@ -37,9 +37,9 @@ bin/console lexik:jwt:generate-keypair
 
 ## Services
 
-#### rateLimiter
+### rateLimiter
 
-To initialize the pdf generation service, download and install the binary at https://wkhtmltopdf.org/downloads.html
+To initialize the pdf generation service, download and install the binary at <https://wkhtmltopdf.org/downloads.html>
 
 #### Cron
 
@@ -54,4 +54,3 @@ In the `reset_passord_success.html.twig` template, fill in the redirection addre
 #### Security
 
 Rate Limiter is already configured. If you need secure more Routes, see comments in the `RateLimiterService.php`
-
