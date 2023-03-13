@@ -99,7 +99,7 @@ class PdfController extends AbstractController
 
        $this->denyAccessUnlessGranted("GET_SHEET", $sheetContent);
 
-       $html =  $this->render('/api/pdf/saved_sheet.html.twig', [
+       $html = $this->render('/api/pdf/saved_sheet.html.twig', [
            'character' => $sheetContent,
        ]);
 
