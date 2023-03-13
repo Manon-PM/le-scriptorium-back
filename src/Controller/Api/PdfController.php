@@ -32,7 +32,7 @@ class PdfController extends AbstractController
      */
     public function generatePdf(\Knp\Snappy\Pdf $knpSnappyPdf, CheckSerializer $checker, Request $request, RateLimiterService $rateLimiter, ValidatorInterface $validator)
     {
-        $rateLimiter->limit($request);
+        // $rateLimiter->limit($request);
 
         $cache = new FilesystemAdapter();
 
@@ -96,7 +96,7 @@ class PdfController extends AbstractController
 
        $this->denyAccessUnlessGranted("GET_SHEET", $sheetContent);
 
-       $html =  $this->render('/api/pdf/saved_sheet.html.twig', [
+       $html = $this->render('/api/pdf/saved_sheet.html.twig', [
            'character' => $sheetContent,
        ]);
 
